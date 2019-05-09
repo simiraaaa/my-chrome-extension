@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+  "name": "my chrome extension",
+  "version": "0.0.1",
+  "description": "自分用の拡張機能",
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "scripts": [
+    ]
+  },
+  "permissions": [
+    "tabs",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "icons" : {
+    "256": "icon.png"
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; object-src 'self'"
+}
