@@ -1,4 +1,23 @@
 var util = {
+  reg: {
+    createSearch(str, option) {
+      var escapeTarget = /[-\/\\^$*+?.()|[\]{}]/;
+      var res = '';
+      for (let i = 0; i < str.length; i++) {
+        let s = str[i];
+        if (escapeTarget.test(s)) {
+          res += `\\${s}`;
+        }
+        else {
+          res += s;
+        }
+        if (i < str.length - 1) {
+          res += '.*';
+        }
+      }
+      return new RegExp(res, option);
+    },
+  },
   windows: {
     getAll() {
       return new Promise(resolve => {
