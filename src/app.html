@@ -1,9 +1,21 @@
 <app>
-  <h1>hello</h1>
+  <button class="button primary" ref="sort" type="button" onclick={sortTabs}>タブソート</button>
   <style type=less>
     :scope {
       display: block;
+      width: 800px;
       max-width: 800px;
     }
   </style>
+  <script>
+
+    this.on('mount', () => {
+      this.refs.sort.focus();
+    });
+
+    this.sortTabs = async () => {
+      await util.tabs.sort();
+      close();
+    };
+  </script>
 </app>
