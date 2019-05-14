@@ -6,6 +6,6 @@ riot.tag2('app', '<button class="button primary" ref="sort" type="button" onclic
 
     this.sortTabs = async () => {
       await util.tabs.sort();
-      close();
+      util.close();
     };
 });

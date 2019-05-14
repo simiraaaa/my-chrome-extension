@@ -1,4 +1,10 @@
 var util = {
+  close() {
+    // 処理を少し待ってから閉じる
+    setTimeout(() => {
+      close();
+    }, 500);
+  },
   reg: {
     createSearch(str, option) {
       var escapeTarget = /[-\/\\^$*+?.()|[\]{}]/;
