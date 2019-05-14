@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/simiraaaa/my-chrome-extension#readme",
   "devDependencies": {
-    "ribot": "^0.0.2"
+    "ribot": "^0.0.2",
+    "less-css-builder": "^0.0.1"
   }
 }

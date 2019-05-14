@@ -1,0 +1,138 @@
+.define-color(@key, @value) {
+  .text-@{key} {
+    color: @value;
+  }
+  .bg-@{key} {
+    background-color: @value;
+  }
+  .border-@{key} {
+    border-color: @value;
+  }
+}
+
+.define-color-grad(@key, @a, @b, @angle:0deg) {
+  .text-@{key} {
+    background-image: -webkit-linear-gradient(@a, @b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .bg-@{key} {
+    background-image: linear-gradient(@angle, @a 0%, @b 100%);
+  }
+  .border-@{key} {
+    border-color: @a;
+  }
+}
+
+// サービスのメインカラー
+.define-color(main, #199705) !important;
+// 通常色
+.define-color(normal, #10242D) !important;
+// 弱色
+.define-color(weak, hsl(0, 0%, 66%)) !important;
+// リンク色
+.define-color(link, hsl(210, 90%, 54%)) !important;
+// 強調色
+.define-color(primary, #A2B000) !important;
+// 危険色
+.define-color(danger, hsl(12, 74%, 49%)) !important;
+// 赤
+.define-color(red, #F55F3E) !important;
+
+// グレー系
+// 濃い, 深い
+.define-color(deepgray, #9E9E9E) !important;
+// ソフト
+.define-color(softgray, #FBFBFB) !important;
+// 薄い, 淡い
+.define-color(palegray, hsla(207, 15%, 74%, 0.1)) !important;
+
+
+.button {
+  border-radius: 999px;
+  &.primary {
+    .bg-primary;
+    border: none;
+    color: white;
+  }
+  &.danger {
+    .bg-danger;
+    border: none;
+    color: white;
+  }
+}
+
+input, textarea, button {
+  outline: none;
+}
+
+
+:root {
+  --main-text-color: #10242D;
+  --main-bg-color: white;
+  --font-weight-bold: 600;
+}
+
+body {
+  font-family: Avenir, "Open Sans", "Helvetica Neue", Helvetica, Arial, Verdana, Roboto, "游ゴシック", "Yu Gothic", "游ゴシック体", "YuGothic", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "Meiryo UI", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  font-size: 14px;
+  color: var(--main-text-color);
+  line-height: 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-bold);
+}
+
+textarea {
+  line-height: 1.4;
+}
+p {
+  line-height: 1.4;
+  -webkit-tap-highlight-color: initial;
+  -webkit-user-select: initial;
+  -webkit-touch-callout: initial;
+}
+
+// meltline
+
+each(
+  360
+  400
+  450
+,{
+  .w@{value} {
+    width: unit(@value, px);
+  }
+  .h@{value} {
+    height: unit(@value, px);
+  }
+  .s@{value} {
+    width: unit(@value, px);
+    height: unit(@value, px);
+  }
+});
+
+each(
+  55
+  64
+, {
+  .m@{value} {
+    margin: unit(@value, px);
+  }
+  .mb@{value} {
+    margin-bottom: unit(@value, px);
+  }
+  .mt@{value} {
+    margin-top: unit(@value, px);
+  }
+  .mtn@{value} {
+    margin-top: unit(@value, px) * -1;
+  }
+});
+
+.box-shadow {
+  box-shadow: 0px 0px 8px 0px #bbb;
+}

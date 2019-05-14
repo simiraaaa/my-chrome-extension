@@ -1,0 +1,195 @@
+.text-main {
+  color: #199705 !important;
+}
+.bg-main {
+  background-color: #199705 !important;
+}
+.border-main {
+  border-color: #199705 !important;
+}
+.text-normal {
+  color: #10242D !important;
+}
+.bg-normal {
+  background-color: #10242D !important;
+}
+.border-normal {
+  border-color: #10242D !important;
+}
+.text-weak {
+  color: hsl(0, 0%, 66%) !important;
+}
+.bg-weak {
+  background-color: hsl(0, 0%, 66%) !important;
+}
+.border-weak {
+  border-color: hsl(0, 0%, 66%) !important;
+}
+.text-link {
+  color: hsl(210, 90%, 54%) !important;
+}
+.bg-link {
+  background-color: hsl(210, 90%, 54%) !important;
+}
+.border-link {
+  border-color: hsl(210, 90%, 54%) !important;
+}
+.text-primary {
+  color: #A2B000 !important;
+}
+.bg-primary {
+  background-color: #A2B000 !important;
+}
+.border-primary {
+  border-color: #A2B000 !important;
+}
+.text-danger {
+  color: hsl(12, 74%, 49%) !important;
+}
+.bg-danger {
+  background-color: hsl(12, 74%, 49%) !important;
+}
+.border-danger {
+  border-color: hsl(12, 74%, 49%) !important;
+}
+.text-red {
+  color: #F55F3E !important;
+}
+.bg-red {
+  background-color: #F55F3E !important;
+}
+.border-red {
+  border-color: #F55F3E !important;
+}
+.text-deepgray {
+  color: #9E9E9E !important;
+}
+.bg-deepgray {
+  background-color: #9E9E9E !important;
+}
+.border-deepgray {
+  border-color: #9E9E9E !important;
+}
+.text-softgray {
+  color: #FBFBFB !important;
+}
+.bg-softgray {
+  background-color: #FBFBFB !important;
+}
+.border-softgray {
+  border-color: #FBFBFB !important;
+}
+.text-palegray {
+  color: hsla(207, 15%, 74%, 0.1) !important;
+}
+.bg-palegray {
+  background-color: hsla(207, 15%, 74%, 0.1) !important;
+}
+.border-palegray {
+  border-color: hsla(207, 15%, 74%, 0.1) !important;
+}
+.button {
+  border-radius: 999px;
+}
+.button.primary {
+  background-color: #A2B000 !important;
+  border: none;
+  color: white;
+}
+.button.danger {
+  background-color: hsl(12, 74%, 49%) !important;
+  border: none;
+  color: white;
+}
+input,
+textarea,
+button {
+  outline: none;
+}
+:root {
+  --main-text-color: #10242D;
+  --main-bg-color: white;
+  --font-weight-bold: 600;
+}
+body {
+  font-family: Avenir, "Open Sans", "Helvetica Neue", Helvetica, Arial, Verdana, Roboto, "游ゴシック", "Yu Gothic", "游ゴシック体", "YuGothic", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "Meiryo UI", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  font-size: 14px;
+  color: var(--main-text-color);
+  line-height: 1;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: var(--font-weight-bold);
+}
+textarea {
+  line-height: 1.4;
+}
+p {
+  line-height: 1.4;
+  -webkit-tap-highlight-color: initial;
+  -webkit-user-select: initial;
+  -webkit-touch-callout: initial;
+}
+.w360 {
+  width: 360px;
+}
+.h360 {
+  height: 360px;
+}
+.s360 {
+  width: 360px;
+  height: 360px;
+}
+.w400 {
+  width: 400px;
+}
+.h400 {
+  height: 400px;
+}
+.s400 {
+  width: 400px;
+  height: 400px;
+}
+.w450 {
+  width: 450px;
+}
+.h450 {
+  height: 450px;
+}
+.s450 {
+  width: 450px;
+  height: 450px;
+}
+.m55 {
+  margin: 55px;
+}
+.mb55 {
+  margin-bottom: 55px;
+}
+.mt55 {
+  margin-top: 55px;
+}
+.mtn55 {
+  margin-top: -55px;
+}
+.m64 {
+  margin: 64px;
+}
+.mb64 {
+  margin-bottom: 64px;
+}
+.mt64 {
+  margin-top: 64px;
+}
+.mtn64 {
+  margin-top: -64px;
+}
+.box-shadow {
+  box-shadow: 0px 0px 8px 0px #bbb;
+}
