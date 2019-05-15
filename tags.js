@@ -79,8 +79,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
     this.delaySearch = _.debounce(this.search, 150);
 
     this.switchTab = (e) => {
-      util.tabs.activate(e.item.item.id);
-      util.windows.activate(e.item.item.windowId);
+      util.tabs.activate(e.item.item);
       util.close();
     };
 

@@ -74,8 +74,9 @@ var util = {
       });
     },
 
-    activate(tabId) {
-      return new Promise(r => chrome.tabs.update(tabId, {active: true}, e => r(e)));
+    activate(tab) {
+      util.windows.activate(tab.windowId);
+      return new Promise(r => chrome.tabs.update(tab.id, {active: true}, e => r(e)));
     },
   },
 
