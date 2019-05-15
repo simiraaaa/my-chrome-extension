@@ -29,7 +29,7 @@
     };
 
     this.filterItems = (items, word) => {
-      if (!word) return items;
+      if (!word) return [items];
       var wordLowerCase = word.toLowerCase();
       var reg = util.reg.createSearch(word, 'i');
       var partMatchItems = [];
@@ -58,28 +58,41 @@
           }
         }
       });
-      return partMatchItems.sort((a, b) => {
-        if (a.urlIndex === b.urlIndex) {
-          return a.titleIndex - b.titleIndex;
-        }
-        else {
-          return a.urlIndex - b.urlIndex;
-        }
-      }).map(item => item.item).concat(aimaiMatchItems.sort((a, b) => {
-        // 両方マッチしてるやつが上
-        var aCount = +a.titleTest + a.urlTest;
-        var bCount = +b.titleTest + b.urlTest;
-        return bCount - aCount;
-      }).map(item => item.item));
+      return [
+        partMatchItems.sort((a, b) => {
+          if (a.urlIndex === b.urlIndex) {
+            return a.titleIndex - b.titleIndex;
+          }
+          else {
+            return a.urlIndex - b.urlIndex;
+          }
+        }).map(item => item.item),
+        aimaiMatchItems.sort((a, b) => {
+          // 両方マッチしてるやつが上
+          var aCount = +a.titleTest + a.urlTest;
+          var bCount = +b.titleTest + b.urlTest;
+          return bCount - aCount;
+        }).map(item => item.item)
+      ];
     };
 
     this.search = async () => {
       var items = await util.tabs.getAllByAllWindow();
       var v = this.refs.search.value;
       if (v) {
-        v.split(/\s+/).forEach(word => {
-          items = this.filterItems(items, word);
-        });
+        var results = [];
+        v.split(/\s+/).reduce((filteredItems, word) => {
+          var results = [];
+          filteredItems.forEach((items) => {
+            this.filterItems(items, word).forEach(items => {
+              if (items.length > 0) {
+                results.push(items);
+              }
+            });
+          });
+          return results;
+        }, [items]).forEach(items => items.forEach(item => results.push(item)));
+        items = results;
       }
       this.items = items;
       this.selectIndex = 0;

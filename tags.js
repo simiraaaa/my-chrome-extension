@@ -1,7 +1,6 @@
 riot.tag2('app', '<div class="f flex-column s-full"> <module-tab-switcher class="f flex-column s-full"></module-tab-switcher> <button class="button primary" ref="sort" type="button" onclick="{sortTabs}">タブソート</button> </div>', 'app,[data-is="app"]{display:block;position:absolute;overflow:hidden;width:100%;height:100%}', '', function(opts) {
 
     this.on('mount', () => {
-      this.refs.sort.focus();
     });
 
     this.sortTabs = async () => {
@@ -28,7 +27,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
     };
 
     this.filterItems = (items, word) => {
-      if (!word) return items;
+      if (!word) return [items];
       var wordLowerCase = word.toLowerCase();
       var reg = util.reg.createSearch(word, 'i');
       var partMatchItems = [];
@@ -57,28 +56,41 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
           }
         }
       });
-      return partMatchItems.sort((a, b) => {
-        if (a.urlIndex === b.urlIndex) {
-          return a.titleIndex - b.titleIndex;
-        }
-        else {
-          return a.urlIndex - b.urlIndex;
-        }
-      }).map(item => item.item).concat(aimaiMatchItems.sort((a, b) => {
+      return [
+        partMatchItems.sort((a, b) => {
+          if (a.urlIndex === b.urlIndex) {
+            return a.titleIndex - b.titleIndex;
+          }
+          else {
+            return a.urlIndex - b.urlIndex;
+          }
+        }).map(item => item.item),
+        aimaiMatchItems.sort((a, b) => {
 
-        var aCount = +a.titleTest + a.urlTest;
-        var bCount = +b.titleTest + b.urlTest;
-        return bCount - aCount;
-      }).map(item => item.item));
+          var aCount = +a.titleTest + a.urlTest;
+          var bCount = +b.titleTest + b.urlTest;
+          return bCount - aCount;
+        }).map(item => item.item)
+      ];
     };
 
     this.search = async () => {
       var items = await util.tabs.getAllByAllWindow();
       var v = this.refs.search.value;
       if (v) {
-        v.split(/\s+/).forEach(word => {
-          items = this.filterItems(items, word);
-        });
+        var results = [];
+        v.split(/\s+/).reduce((filteredItems, word) => {
+          var results = [];
+          filteredItems.forEach((items) => {
+            this.filterItems(items, word).forEach(items => {
+              if (items.length > 0) {
+                results.push(items);
+              }
+            });
+          });
+          return results;
+        }, [items]).forEach(items => items.forEach(item => results.push(item)));
+        items = results;
       }
       this.items = items;
       this.selectIndex = 0;
