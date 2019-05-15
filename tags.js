@@ -27,48 +27,58 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       }
     };
 
+    this.filterItems = (items, word) => {
+      if (!word) return items;
+      var wordLowerCase = word.toLowerCase();
+      var reg = util.reg.createSearch(word, 'i');
+      var partMatchItems = [];
+      var aimaiMatchItems = [];
+      items.forEach(item => {
+        var urlIndex = item.url.indexOf(wordLowerCase);
+        var titleIndex = item.title.toLowerCase().indexOf(wordLowerCase);
+
+        if (urlIndex !== -1 || titleIndex !== -1) {
+          partMatchItems.push({
+            item,
+            urlIndex: urlIndex === -1 ? Infinity : urlIndex,
+            titleIndex: titleIndex === -1 ? Infinity : titleIndex,
+          });
+        }
+        else {
+          var urlTest = reg.test(item.url);
+          var titleTest = reg.test(item.title);
+
+          if (urlTest || titleTest) {
+            aimaiMatchItems.push({
+              item,
+              urlTest,
+              titleTest,
+            });
+          }
+        }
+      });
+      return partMatchItems.sort((a, b) => {
+        if (a.urlIndex === b.urlIndex) {
+          return a.titleIndex - b.titleIndex;
+        }
+        else {
+          return a.urlIndex - b.urlIndex;
+        }
+      }).map(item => item.item).concat(aimaiMatchItems.sort((a, b) => {
+
+        var aCount = +a.titleTest + a.urlTest;
+        var bCount = +b.titleTest + b.urlTest;
+        return bCount - aCount;
+      }).map(item => item.item));
+    };
+
     this.search = async () => {
       var items = await util.tabs.getAllByAllWindow();
       var v = this.refs.search.value;
-      var reg = util.reg.createSearch(v, 'i');
       if (v) {
-        var partMatchItems = [];
-        var aimaiMatchItems = [];
-        items.forEach(item => {
-          var urlIndex = item.url.indexOf(v.toLowerCase());
-          var titleIndex = item.title.toLowerCase().indexOf(v.toLowerCase());
-          if (urlIndex !== -1 || titleIndex !== -1) {
-            partMatchItems.push({
-              item,
-              urlIndex,
-              titleIndex,
-            });
-          }
-          else {
-            var urlTest = reg.test(item.url);
-            var titleTest = reg.test(item.title);
-            if (urlTest || titleTest) {
-              aimaiMatchItems.push({
-                item,
-                urlTest,
-                titleTest,
-              });
-            }
-          }
+        v.split(/\s+/).forEach(word => {
+          items = this.filterItems(items, word);
         });
-        items = partMatchItems.sort((a, b) => {
-          if (a.urlIndex === b.urlIndex) {
-            return a.titleIndex - b.titleIndex;
-          }
-          else {
-            return a.urlIndex - b.urlIndex;
-          }
-        }).map(item => item.item).concat(aimaiMatchItems.sort((a, b) => {
-
-          var aCount = +a.titleTest + a.urlTest;
-          var bCount = +b.titleTest + b.urlTest;
-          return bCount - aCount;
-        }).map(item => item.item));
       }
       this.items = items;
       this.selectIndex = 0;
