@@ -81,6 +81,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
     this.switchTab = (e) => {
       util.tabs.activate(e.item.item.id);
       util.windows.activate(e.item.item.windowId);
+      util.close();
     };
 
     this.selectUpDown = (e) => {
