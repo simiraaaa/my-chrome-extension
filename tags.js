@@ -35,8 +35,8 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
         var partMatchItems = [];
         var aimaiMatchItems = [];
         items.forEach(item => {
-          var urlIndex = item.url.indexOf(v);
-          var titleIndex = item.title.indexOf(v);
+          var urlIndex = item.url.indexOf(v.toLowerCase());
+          var titleIndex = item.title.toLowerCase().indexOf(v.toLowerCase());
           if (urlIndex !== -1 || titleIndex !== -1) {
             partMatchItems.push({
               item,
