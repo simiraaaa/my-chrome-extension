@@ -87,9 +87,11 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
     this.selectUpDown = (e) => {
       if (e.keyCode === 38) {
         this.selectIndex = Math.max(0, this.selectIndex - 1);
+        e.preventDefault();
       }
       else if (e.keyCode === 40) {
         this.selectIndex = Math.min(this.items.length - 1, this.selectIndex + 1);
+        e.preventDefault();
       }
       else {
         e.preventUpdate = true;
