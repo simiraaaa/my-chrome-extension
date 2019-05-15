@@ -68,7 +68,7 @@
           // 両方マッチしてるやつが上
           var aCount = +a.titleTest + a.urlTest;
           var bCount = +b.titleTest + b.urlTest;
-          return aCount - bCount;
+          return bCount - aCount;
         }).map(item => item.item));
       }
       this.items = items;

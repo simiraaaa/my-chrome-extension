@@ -67,7 +67,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
 
           var aCount = +a.titleTest + a.urlTest;
           var bCount = +b.titleTest + b.urlTest;
-          return aCount - bCount;
+          return bCount - aCount;
         }).map(item => item.item));
       }
       this.items = items;
