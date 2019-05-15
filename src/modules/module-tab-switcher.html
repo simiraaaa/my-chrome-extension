@@ -1,15 +1,16 @@
-riot.tag2('app', '<div class="f flex-column s-full"> <module-tab-switcher class="f flex-column s-full"></module-tab-switcher> <button class="button primary" ref="sort" type="button" onclick="{sortTabs}">タブソート</button> </div>', 'app,[data-is="app"]{display:block;position:absolute;overflow:hidden;width:100%;height:100%}', '', function(opts) {
-
-    this.on('mount', () => {
-      this.refs.sort.focus();
-    });
-
-    this.sortTabs = async () => {
-      await util.tabs.sort();
-      util.close();
-    };
-});
-riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column s-full" onkeydown="{selectUpDown}"> <input ref="search" type="search" oninput="{delaySearch}" class="input w-full fs12 flex-fixed letter-spacing-1"> <div class="overflow-scroll s-full" ref="scroll"> <item-tab each="{item, i in items}" item="{item}" onclick="{switchTab}" selected="{i === parent.selectIndex}"></item-tab> </div> </form>', 'module-tab-switcher,[data-is="module-tab-switcher"]{display:block}', '', function(opts) {
+<module-tab-switcher>
+  <form onsubmit="{submit}" class="f flex-column s-full" onkeydown="{selectUpDown}">
+    <input ref="search" type="search" oninput="{delaySearch}" class="input w-full fs12 flex-fixed letter-spacing-1">
+    <div class="overflow-scroll s-full" ref="scroll">
+      <item-tab each="{item, i in items}" item="{item}" onclick="{switchTab}" selected="{i === parent.selectIndex}"></item-tab>
+    </div>
+  </form>
+  <style type="less">
+    :scope {
+      display: block;
+    }
+  </style>
+  <script>
 
     this.selectIndex = 0;
 
@@ -20,7 +21,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
 
     this.submit = (e) => {
       e.preventDefault();
-
+      // 選択しているアイテムをクリックする
       var item = this.items[this.selectIndex];
       if (item) {
         this.switchTab({item:{item}});
@@ -64,7 +65,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
             return a.urlIndex - b.urlIndex;
           }
         }).map(item => item.item).concat(aimaiMatchItems.sort((a, b) => {
-
+          // 両方マッチしてるやつが上
           var aCount = +a.titleTest + a.urlTest;
           var bCount = +b.titleTest + b.urlTest;
           return aCount - bCount;
@@ -95,6 +96,5 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       }
     };
 
-});
-riot.tag2('item-tab', '<div class="f w-full p4 border-bottom cursor-pointer {opts.selected ? \'bg-link text-white\' : \'hover-bg-primary hover-text-white\'}"> <div class="mr4 flex-fixed s24 f fh bg-white rounded-4"> <img riot-src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s20"> </div> <div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.title}</div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs10 parent-hover-text-white lh12 {opts.selected ? \'text-white\' : \'text-weak\'}">{opts.item.url}</div> </div> </div>', 'item-tab,[data-is="item-tab"]{display:block}', '', function(opts) {
-});
+  </script>
+</module-tab-switcher>

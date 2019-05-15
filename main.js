@@ -36,6 +36,10 @@ var util = {
     getCurrent() {
       return new Promise(r => chrome.windows.getCurrent(null, w => r(w)));
     },
+
+    activate(windowId) {
+      return new Promise(r => chrome.windows.update(windowId, { focused: true }, e => r(e)));
+    },
   },
 
   tabs: {
@@ -49,13 +53,29 @@ var util = {
 
     async sort(desc = false) {
       var n = desc ? 1 : -1;
-      var tabs = [];
-      (await util.windows.getAll()).forEach(async (w) => {
-        var _tabs = await util.tabs.getAll(w.id);
-        _tabs = await new Promise(r => chrome.tabs.move(_tabs.sort((a, b) => a.url < b.url ? n : -n).map(e => e.id), { index: -1 }, tabs => r(tabs)));
-        tabs = tabs.concat(_tabs);
+      return await new Promise(async r => {
+        var tabs = [];
+        for (const w of await util.windows.getAll()) {
+          var _tabs = await util.tabs.getAll(w.id);
+          _tabs = await new Promise(r => chrome.tabs.move(_tabs.sort((a, b) => a.url < b.url ? n : -n).map(e => e.id), { index: -1 }, tabs => r(tabs)));
+          tabs = tabs.concat(_tabs);
+        }
+        r(tabs);
       });
-      return tabs;
+    },
+
+    async getAllByAllWindow() {
+      return await new Promise(async r => {
+        var tabs = [];
+        for (const w of await util.windows.getAll()) {
+          tabs = tabs.concat(await util.tabs.getAll(w.id));
+        }
+        r(tabs);
+      });
+    },
+
+    activate(tabId) {
+      return new Promise(r => chrome.tabs.update(tabId, {active: true}, e => r(e)));
     },
   },
 

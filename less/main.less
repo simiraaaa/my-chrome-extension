@@ -8,6 +8,15 @@
   .border-@{key} {
     border-color: @value;
   }
+  .hover-text-@{key}:hover {
+    color: @value;
+  }
+  .hover-bg-@{key}:hover {
+    background-color: @value;
+  }
+  .hover-border-@{key}:hover {
+    border-color: @value;
+  }
 }
 
 .define-color-grad(@key, @a, @b, @angle:0deg) {
@@ -29,7 +38,7 @@
 // 通常色
 .define-color(normal, #10242D) !important;
 // 弱色
-.define-color(weak, hsl(0, 0%, 66%)) !important;
+.define-color(weak, #555) !important;
 // リンク色
 .define-color(link, hsl(210, 90%, 54%)) !important;
 // 強調色
@@ -47,7 +56,12 @@
 // 薄い, 淡い
 .define-color(palegray, hsla(207, 15%, 74%, 0.1)) !important;
 
-
+.hover-text-white:hover {
+  color: white !important;
+  .parent-hover-text-white {
+    color: white !important;
+  }
+}
 .button {
   border-radius: 999px;
   &.primary {
@@ -70,16 +84,20 @@ input, textarea, button {
 :root {
   --main-text-color: #10242D;
   --main-bg-color: white;
-  --font-weight-bold: 600;
+  --font-weight-bold: 700;
 }
 
 body {
-  font-family: Avenir, "Open Sans", "Helvetica Neue", Helvetica, Arial, Verdana, Roboto, "游ゴシック", "Yu Gothic", "游ゴシック体", "YuGothic", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "Meiryo UI", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+  font-family: Avenir, "Open Sans", "Helvetica Neue", Helvetica, Arial, Verdana, Roboto, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "游ゴシック", "Yu Gothic", "游ゴシック体", "YuGothic", "Meiryo UI", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
   -webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;
   font-size: 14px;
+  font-weight: 500;
   color: var(--main-text-color);
   line-height: 1;
+  width: 800px;
+  max-width: 800px;
+  height: 600px;
 }
 
 h1, h2, h3, h4, h5, h6 {

@@ -7,6 +7,15 @@
 .border-main {
   border-color: #199705 !important;
 }
+.hover-text-main:hover {
+  color: #199705 !important;
+}
+.hover-bg-main:hover {
+  background-color: #199705 !important;
+}
+.hover-border-main:hover {
+  border-color: #199705 !important;
+}
 .text-normal {
   color: #10242D !important;
 }
@@ -16,14 +25,32 @@
 .border-normal {
   border-color: #10242D !important;
 }
+.hover-text-normal:hover {
+  color: #10242D !important;
+}
+.hover-bg-normal:hover {
+  background-color: #10242D !important;
+}
+.hover-border-normal:hover {
+  border-color: #10242D !important;
+}
 .text-weak {
-  color: hsl(0, 0%, 66%) !important;
+  color: #555 !important;
 }
 .bg-weak {
-  background-color: hsl(0, 0%, 66%) !important;
+  background-color: #555 !important;
 }
 .border-weak {
-  border-color: hsl(0, 0%, 66%) !important;
+  border-color: #555 !important;
+}
+.hover-text-weak:hover {
+  color: #555 !important;
+}
+.hover-bg-weak:hover {
+  background-color: #555 !important;
+}
+.hover-border-weak:hover {
+  border-color: #555 !important;
 }
 .text-link {
   color: hsl(210, 90%, 54%) !important;
@@ -32,6 +59,15 @@
   background-color: hsl(210, 90%, 54%) !important;
 }
 .border-link {
+  border-color: hsl(210, 90%, 54%) !important;
+}
+.hover-text-link:hover {
+  color: hsl(210, 90%, 54%) !important;
+}
+.hover-bg-link:hover {
+  background-color: hsl(210, 90%, 54%) !important;
+}
+.hover-border-link:hover {
   border-color: hsl(210, 90%, 54%) !important;
 }
 .text-primary {
@@ -43,6 +79,15 @@
 .border-primary {
   border-color: #A2B000 !important;
 }
+.hover-text-primary:hover {
+  color: #A2B000 !important;
+}
+.hover-bg-primary:hover {
+  background-color: #A2B000 !important;
+}
+.hover-border-primary:hover {
+  border-color: #A2B000 !important;
+}
 .text-danger {
   color: hsl(12, 74%, 49%) !important;
 }
@@ -50,6 +95,15 @@
   background-color: hsl(12, 74%, 49%) !important;
 }
 .border-danger {
+  border-color: hsl(12, 74%, 49%) !important;
+}
+.hover-text-danger:hover {
+  color: hsl(12, 74%, 49%) !important;
+}
+.hover-bg-danger:hover {
+  background-color: hsl(12, 74%, 49%) !important;
+}
+.hover-border-danger:hover {
   border-color: hsl(12, 74%, 49%) !important;
 }
 .text-red {
@@ -61,6 +115,15 @@
 .border-red {
   border-color: #F55F3E !important;
 }
+.hover-text-red:hover {
+  color: #F55F3E !important;
+}
+.hover-bg-red:hover {
+  background-color: #F55F3E !important;
+}
+.hover-border-red:hover {
+  border-color: #F55F3E !important;
+}
 .text-deepgray {
   color: #9E9E9E !important;
 }
@@ -68,6 +131,15 @@
   background-color: #9E9E9E !important;
 }
 .border-deepgray {
+  border-color: #9E9E9E !important;
+}
+.hover-text-deepgray:hover {
+  color: #9E9E9E !important;
+}
+.hover-bg-deepgray:hover {
+  background-color: #9E9E9E !important;
+}
+.hover-border-deepgray:hover {
   border-color: #9E9E9E !important;
 }
 .text-softgray {
@@ -79,6 +151,15 @@
 .border-softgray {
   border-color: #FBFBFB !important;
 }
+.hover-text-softgray:hover {
+  color: #FBFBFB !important;
+}
+.hover-bg-softgray:hover {
+  background-color: #FBFBFB !important;
+}
+.hover-border-softgray:hover {
+  border-color: #FBFBFB !important;
+}
 .text-palegray {
   color: hsla(207, 15%, 74%, 0.1) !important;
 }
@@ -87,6 +168,21 @@
 }
 .border-palegray {
   border-color: hsla(207, 15%, 74%, 0.1) !important;
+}
+.hover-text-palegray:hover {
+  color: hsla(207, 15%, 74%, 0.1) !important;
+}
+.hover-bg-palegray:hover {
+  background-color: hsla(207, 15%, 74%, 0.1) !important;
+}
+.hover-border-palegray:hover {
+  border-color: hsla(207, 15%, 74%, 0.1) !important;
+}
+.hover-text-white:hover {
+  color: white !important;
+}
+.hover-text-white:hover .parent-hover-text-white {
+  color: white !important;
 }
 .button {
   border-radius: 999px;
@@ -109,15 +205,19 @@ button {
 :root {
   --main-text-color: #10242D;
   --main-bg-color: white;
-  --font-weight-bold: 600;
+  --font-weight-bold: 700;
 }
 body {
-  font-family: Avenir, "Open Sans", "Helvetica Neue", Helvetica, Arial, Verdana, Roboto, "游ゴシック", "Yu Gothic", "游ゴシック体", "YuGothic", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "Meiryo UI", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+  font-family: Avenir, "Open Sans", "Helvetica Neue", Helvetica, Arial, Verdana, Roboto, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "游ゴシック", "Yu Gothic", "游ゴシック体", "YuGothic", "Meiryo UI", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
   -webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;
   font-size: 14px;
+  font-weight: 500;
   color: var(--main-text-color);
   line-height: 1;
+  width: 800px;
+  max-width: 800px;
+  height: 600px;
 }
 h1,
 h2,
