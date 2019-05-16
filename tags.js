@@ -13,8 +13,8 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
     this.selectIndex = 0;
 
     this.on('mount', () => {
-      this.search();
       this.refs.search.focus();
+      this.search();
     });
 
     this.submit = (e) => {
