@@ -121,4 +121,14 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
 
 });
 riot.tag2('item-tab', '<div class="f fm w-full p4 border-bottom cursor-pointer {opts.selected ? \'bg-link text-white\' : \'hover-bg-primary hover-text-white\'}"> <div class="mr4 flex-fixed s24 f fh bg-white rounded-4"> <img riot-src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s20"> </div> <div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.title}</div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs10 parent-hover-text-white lh12 {opts.selected ? \'text-white\' : \'text-weak\'}">{opts.item.url}</div> </div> </div>', 'item-tab,[data-is="item-tab"]{display:block}', '', function(opts) {
+    this.on('updated', () => {
+      if (!this._lastSelected && opts.selected) {
+        this.root.scrollIntoView({
+          block: 'nearest',
+          inline: 'nearest',
+        });
+      }
+      this._lastSelected = opts.selected;
+    });
+
 });
