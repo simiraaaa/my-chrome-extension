@@ -19,10 +19,18 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
 
     this.submit = (e) => {
       e.preventDefault();
+      var _switch = () => {
 
-      var item = this.items[this.selectIndex];
-      if (item) {
-        this.switchTab({item:{item}});
+        var item = this.items[this.selectIndex];
+        if (item) {
+          this.switchTab({item:{item}});
+        }
+      };
+      if (this.isSearching) {
+        this.one('searched', _switch);
+      }
+      else {
+        _switch();
       }
     };
 
@@ -94,11 +102,18 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       }
       this.items = items;
       this.selectIndex = 0;
+      this.isSearching = false;
+      this.trigger('searched');
       this.update();
       this.refs.scroll.scrollTop = 0;
     };
 
-    this.delaySearch = _.debounce(this.search, 150);
+    this._debouncedSearch = _.debounce(this.search, 150);
+
+    this.delaySearch = () => {
+      this.isSearching = true;
+      this._debouncedSearch();
+    };
 
     this.switchTab = (e) => {
       util.tabs.activate(e.item.item);
