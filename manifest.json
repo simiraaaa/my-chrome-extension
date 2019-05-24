@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "my chrome extension",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "自分用の拡張機能",
   "browser_action": {
     "default_popup": "popup.html",
