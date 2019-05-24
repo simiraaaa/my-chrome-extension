@@ -1,3 +1,26 @@
+// ウィンドウフォーカスしたときも タブ履歴 push する
+chrome.windows.onFocusChanged.addListener(async windowId => {
+  const {
+    tabHistory,
+    tabs,
+  } = util;
+  // unfocus
+  if (windowId === -1) {
+    return;
+  }
+  if (await tabHistory.isLocked()) {
+    tabHistory.unlock();
+    return;
+  }
+  await tabHistory.load();
+  var currentTab = await tabs.getCurrent();
+  if (tabHistory.current === currentTab.id) {
+    return;
+  }
+  tabHistory.push({ tabId: currentTab.id });
+  tabHistory.save();
+});
+// タブ履歴 push
 chrome.tabs.onActivated.addListener(async info => {
   const {
     tabHistory,
