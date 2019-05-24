@@ -123,10 +123,15 @@ var util = {
         },
       });
     },
+    // 履歴内に同じタブがある場合はそのタブを消してから push
     push(info) {
       // 戻っている場合は戻っている分の履歴は消す
       if (this._historyIndex !== 0) {
         this._history = this._history.slice(0, this._history.length - this._historyIndex);
+      }
+      var index = this._history.findIndex(item => item === info.tabId);
+      if (index !== -1) {
+        var id = this._history.splice(index, 1);
       }
       this._history.push(info.tabId);
       this._historyIndex = 0;
