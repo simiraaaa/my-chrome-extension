@@ -9,15 +9,27 @@
   },
   "background": {
     "scripts": [
-    ]
+      "util.js",
+      "event.js"
+    ],
+    "persistent": false
   },
   "permissions": [
     "tabs",
+    "storage",
     "http://*/*",
     "https://*/*"
   ],
   "icons" : {
     "256": "icon.png"
+  },
+  "commands": {
+    "backTab": {
+      "description": "前に表示したタブを表示する"
+    },
+    "forwardTab": {
+      "description": "前のタブを表示したやつを元のタブに戻す"
+    }
   },
   "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-eval'; style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline'; object-src 'self'"
 }
