@@ -67,6 +67,7 @@ var util = {
       }, e => r(e && e[0])));
     },
 
+    // TODO: サブドメインで分割、優先順位を考慮する (オプションページで設定)
     async sort(desc = false) {
       var n = desc ? 1 : -1;
       return await new Promise(async r => {

@@ -34,7 +34,14 @@ chrome.tabs.onActivated.addListener(async info => {
   tabHistory.push(info);
   tabHistory.save();
 });
-
+// 履歴から削除する
+chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+  // ウィンドウが閉じられた場合のタブが閉じられたときは何もしない
+  if (removeInfo.isWindowClosing) {
+    return ;
+  }
+  // TODO: タブ履歴から消す
+});
 // ショートカット
 chrome.commands.onCommand.addListener(async function(command) {
   const {
