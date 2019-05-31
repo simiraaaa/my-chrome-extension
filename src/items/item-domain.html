@@ -1,0 +1,27 @@
+<item-domain>
+  <div class="f fm w-full p4 border-bottom cursor-pointer { opts.selected ? 'bg-link text-white' : 'hover-bg-primary hover-text-white' }">
+    <div class="mr4 flex-fixed s20 f fh bg-white rounded-4">
+      <img src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s16">
+    </div>
+    <div>
+      <div class="line-clamp-2 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.name}</div>
+    </div>
+  </div>
+  <style type="less">
+    :scope {
+      display: block;
+    }
+  </style>
+  <script>
+    this.on('updated', () => {
+      if (!this._lastSelected && opts.selected) {
+        this.root.scrollIntoView({
+          block: 'nearest',
+          inline: 'nearest',
+        });
+      }
+      this._lastSelected = opts.selected;
+    });
+
+  </script>
+</item-domain>
