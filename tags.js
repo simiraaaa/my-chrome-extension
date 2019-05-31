@@ -186,14 +186,18 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
         if (isArrowUp) {
           if (domain) {
             var item = this.items[Math.max(0, domain.__index - 1)];
-            this.selectIndex = item && item.tabs[0].__index;
+            if (item) {
+              this.selectIndex = item.tabs[0].__index;
+            }
           }
           e.preventDefault();
         }
         else if (isArrowDown) {
           if (domain) {
             var item = this.items[Math.min(this.items.length - 1, domain.__index + 1)];
-            this.selectIndex = item && item.tabs[0].__index;
+            if (item) {
+              this.selectIndex = item.tabs[0].__index;
+            }
           }
           e.preventDefault();
         }
