@@ -1,5 +1,5 @@
 <module-tab-switcher>
-  <form onsubmit="{submit}" class="f flex-column s-full" onkeydown="{selectUpDown}">
+  <form onsubmit="{submit}" class="f flex-column s-full" onkeydown="{shortcut}" onmousemove="{onmousemove}">
     <input ref="search" type="search" oninput="{delaySearch}" class="input w-full fs12 flex-fixed letter-spacing-1">
     <div tabIndex="-1" class="outline-none f w-full overflow-hidden">
       <div class="flex-fixed w200 h-full f flex-column border-right">
@@ -13,7 +13,7 @@
         <div class="overflow-scroll s-full" ref="scroll">
           <div each="{domain in items}">
             <div class="bg-whitesmoke border-bottom w-full py8 px6 fs12 flex-fixed">{domain.name}</div>
-            <item-tab each="{item in domain.tabs}" item="{item}" onclick="{switchTab}" selected="{item.__index === parent.parent.selectIndex}"></item-tab>
+            <item-tab each="{item in domain.tabs}" item="{item}" onclick="{switchTab}" selected="{item.__index === parent.parent.selectIndex}" onmouseenter="{mouseenter}" class="{ 'opacity-50 pointer-none' : item._del}"></item-tab>
           </div>
         </div>
       </div>
@@ -193,13 +193,37 @@
       this.update();
     };
 
-    this.selectUpDown = (e) => {
+    this.closeTab = (tab) => {
+      if (!tab) return ;
+      if (tab._del) return ;
+      tab._del = true;
+      this.update();
+      chrome.tabs.remove(tab.id);
+    };
+
+    this.shortcut = (e) => {
       var code = e.keyCode;
       var isArrowUp = code === 38;
       var isArrowDown = code === 40;
       var domain = this._currentFocusDomain;
+      var self = this;
+      if (e.ctrlKey) {
+        var f = {
+          d() {
+            var tab = this._primaryHover ? this._lastHover : this._currentFocusTab;
+            if (!tab || tab._del) {
+              tab = this._currentFocusTab;
+            }
+            this.closeTab(tab);
+            e.preventDefault();
+          },
+        }[e.key];
+        if (f) f.call(this);
+        return ;
+      }
       if (e.shiftKey) {
         if (isArrowUp) {
+          this._primaryHover = false;
           if (domain) {
             var item = this.items[Math.max(0, domain.__index - 1)];
             if (item) {
@@ -209,6 +233,7 @@
           e.preventDefault();
         }
         else if (isArrowDown) {
+          this._primaryHover = false;
           if (domain) {
             var item = this.items[Math.min(this.items.length - 1, domain.__index + 1)];
             if (item) {
@@ -219,10 +244,12 @@
         }
       }
       else if (isArrowUp) {
+        this._primaryHover = false;
         this.selectIndex = Math.max(0, this.selectIndex - 1);
         e.preventDefault();
       }
       else if (isArrowDown) {
+        this._primaryHover = false;
         this.selectIndex = Math.min(this.tabLength - 1, this.selectIndex + 1);
         e.preventDefault();
       }
@@ -233,6 +260,16 @@
         }
         e.preventUpdate = true;
       }
+    };
+
+    this.onmousemove = (e) => {
+      e.preventUpdate = true;
+      this._primaryHover = true;
+    };
+
+    this.mouseenter = (e) => {
+      this._lastHover = e.item.item;
+      e.preventUpdate = true;
     };
 
   </script>
