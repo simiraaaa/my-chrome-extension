@@ -14,6 +14,9 @@
     }
   </style>
   <script>
+    this.on('mount', () => {
+      this.update();
+    });
     this.on('updated', () => {
       if (!this._lastSelected && opts.selected) {
         this.root.scrollIntoView({
