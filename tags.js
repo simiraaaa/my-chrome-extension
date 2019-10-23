@@ -182,8 +182,8 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       this.tabLength = counter;
       this.selectIndex = 0;
       this.isSearching = false;
-      this.trigger('searched');
       this.update();
+      this.trigger('searched');
       this.refs.scroll.scrollTop = 0;
     };
 
