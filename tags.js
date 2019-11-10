@@ -8,7 +8,10 @@ riot.tag2('app', '<div class="f flex-column s-full"> <module-tab-switcher class=
       util.close();
     };
 });
-riot.tag2('item-domain', '<div class="f fm w-full p4 border-bottom cursor-pointer {opts.selected ? \'bg-link text-white\' : \'hover-bg-primary hover-text-white\'}"> <div class="mr4 flex-fixed s20 f fh bg-white rounded-4"> <img riot-src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s16"> </div> <div> <div class="line-clamp-2 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.name}</div> </div> </div>', 'item-domain,[data-is="item-domain"]{display:block}', '', function(opts) {
+riot.tag2('item-tab', '<div class="f fm w-full p4 border-bottom cursor-pointer {opts.selected ? \'bg-link text-white\' : \'hover-bg-primary hover-text-white\'}"> <div class="mr4 flex-fixed s24 f fh bg-white rounded-4"> <img riot-src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s20"> </div> <div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.title}</div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs10 parent-hover-text-white lh12 {opts.selected ? \'text-white\' : \'text-weak\'}">{opts.item.url}</div> </div> </div>', 'item-tab,[data-is="item-tab"]{display:block}', '', function(opts) {
+    this.on('mount', () => {
+      this.update();
+    });
     this.on('updated', () => {
       if (!this._lastSelected && opts.selected) {
         this.root.scrollIntoView({
@@ -20,10 +23,7 @@ riot.tag2('item-domain', '<div class="f fm w-full p4 border-bottom cursor-pointe
     });
 
 });
-riot.tag2('item-tab', '<div class="f fm w-full p4 border-bottom cursor-pointer {opts.selected ? \'bg-link text-white\' : \'hover-bg-primary hover-text-white\'}"> <div class="mr4 flex-fixed s24 f fh bg-white rounded-4"> <img riot-src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s20"> </div> <div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.title}</div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs10 parent-hover-text-white lh12 {opts.selected ? \'text-white\' : \'text-weak\'}">{opts.item.url}</div> </div> </div>', 'item-tab,[data-is="item-tab"]{display:block}', '', function(opts) {
-    this.on('mount', () => {
-      this.update();
-    });
+riot.tag2('item-domain', '<div class="f fm w-full p4 border-bottom cursor-pointer {opts.selected ? \'bg-link text-white\' : \'hover-bg-primary hover-text-white\'}"> <div class="mr4 flex-fixed s20 f fh bg-white rounded-4"> <img riot-src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s16"> </div> <div> <div class="line-clamp-2 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.name}</div> </div> </div>', 'item-domain,[data-is="item-domain"]{display:block}', '', function(opts) {
     this.on('updated', () => {
       if (!this._lastSelected && opts.selected) {
         this.root.scrollIntoView({
@@ -86,7 +86,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       var partMatchItems = [];
       var aimaiMatchItems = [];
       items.forEach(item => {
-        var urlIndex = item.url.indexOf(wordLowerCase);
+        var urlIndex = item.isBookmarklet ? -1 : item.url.indexOf(wordLowerCase);
         var titleIndex = item.title.toLowerCase().indexOf(wordLowerCase);
 
         if (urlIndex !== -1 || titleIndex !== -1) {
@@ -97,7 +97,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
           });
         }
         else {
-          var urlTest = reg.test(item.url);
+          var urlTest = item.isBookmarklet ? false : reg.test(item.url);
           var titleTest = reg.test(item.title);
 
           if (urlTest || titleTest) {
@@ -128,8 +128,16 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
     };
 
     this.search = async () => {
-      var items = await util.tabs.getAllByAllWindow();
       var v = this.refs.search.value;
+      var items = null;
+
+      if (/^ /.test(v)) {
+        items = await util.bookmarks.getAll();
+        v = v.substr(1);
+      }
+      else {
+        items = await util.tabs.getAllByAllWindow();
+      }
       if (v) {
         var results = [];
         v.split(/\s+/).reduce((filteredItems, word) => {
@@ -150,14 +158,19 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       var domains = [];
       var domainReg = /^.*\:\/\/([^\/]*)\//i;
       items.forEach((item, index) => {
-        var domainMatch = item.url.match(domainReg);
         var domainName = null;
-
-        if (domainMatch) {
-          domainName = domainMatch[1].replace(/^www\./, '').replace(/\:\d+/, '');
+        if (item.isBookmarklet) {
+          domainName = 'ブックマークレット';
         }
-        if (!domainName) {
-          domainName = 'その他';
+        else {
+          var domainMatch = item.url.match(domainReg);
+
+          if (domainMatch) {
+            domainName = domainMatch[1].replace(/^www\./, '').replace(/\:\d+/, '');
+          }
+          if (!domainName) {
+            domainName = 'その他';
+          }
         }
         var domain = domainMap[domainName];
         if (!domain) {
@@ -194,9 +207,27 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       this._debouncedSearch();
     };
 
-    this.switchTab = (e) => {
-      util.tabs.activate(e.item.item);
-      util.close();
+    this.switchTab = async (e) => {
+      const {item} = e.item;
+      if (item.isBookmarklet) {
+        chrome.tabs.executeScript(await util.tabs.getCurrent().id, {
+          code: decodeURIComponent(item.script.substr('javascript:'.length)),
+        }, function () {
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError.message);
+          }
+          else {
+            close();
+          }
+        });
+      }
+      else if (item.type === 'bookmark') {
+        open(item.url);
+      }
+      else {
+        util.tabs.activate(item);
+        util.close();
+      }
     };
 
     this.focusTabFirst = (e) => {

@@ -17,6 +17,8 @@
   "permissions": [
     "tabs",
     "storage",
+    "bookmarks",
+    "chrome://favicon/*/*",
     "http://*/*",
     "https://*/*"
   ],

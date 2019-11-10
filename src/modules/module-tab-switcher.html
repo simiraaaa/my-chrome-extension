@@ -75,7 +75,7 @@
       var partMatchItems = [];
       var aimaiMatchItems = [];
       items.forEach(item => {
-        var urlIndex = item.url.indexOf(wordLowerCase);
+        var urlIndex = item.isBookmarklet ? -1 : item.url.indexOf(wordLowerCase);
         var titleIndex = item.title.toLowerCase().indexOf(wordLowerCase);
         // 部分一致
         if (urlIndex !== -1 || titleIndex !== -1) {
@@ -86,7 +86,7 @@
           });
         }
         else {
-          var urlTest = reg.test(item.url);
+          var urlTest = item.isBookmarklet ? false : reg.test(item.url);
           var titleTest = reg.test(item.title);
           // 曖昧一致
           if (urlTest || titleTest) {
@@ -117,8 +117,16 @@
     };
 
     this.search = async () => {
-      var items = await util.tabs.getAllByAllWindow();
       var v = this.refs.search.value;
+      var items = null;
+      // ブックマーク検索 (最初が半角スペースの場合)
+      if (/^ /.test(v)) {
+        items = await util.bookmarks.getAll();
+        v = v.substr(1);
+      }
+      else {
+        items = await util.tabs.getAllByAllWindow();
+      }
       if (v) {
         var results = [];
         v.split(/\s+/).reduce((filteredItems, word) => {
@@ -134,19 +142,25 @@
         }, [items]).forEach(items => items.forEach(item => results.push(item)));
         items = results;
       }
+      
       // ドメインごとに分ける
       var domainMap = {};
       var domains = [];
       var domainReg = /^.*\:\/\/([^\/]*)\//i;
       items.forEach((item, index) => {
-        var domainMatch = item.url.match(domainReg);
         var domainName = null;
-        
-        if (domainMatch) {
-          domainName = domainMatch[1].replace(/^www\./, '').replace(/\:\d+/, '');
+        if (item.isBookmarklet) {
+          domainName = 'ブックマークレット';
         }
-        if (!domainName) {
-          domainName = 'その他';
+        else {            
+          var domainMatch = item.url.match(domainReg);
+          
+          if (domainMatch) {
+            domainName = domainMatch[1].replace(/^www\./, '').replace(/\:\d+/, '');
+          }
+          if (!domainName) { 
+            domainName = 'その他';
+          }
         }
         var domain = domainMap[domainName];
         if (!domain) {
@@ -183,9 +197,27 @@
       this._debouncedSearch();
     };
 
-    this.switchTab = (e) => {
-      util.tabs.activate(e.item.item);
-      util.close();
+    this.switchTab = async (e) => {
+      const {item} = e.item;
+      if (item.isBookmarklet) {
+        chrome.tabs.executeScript(await util.tabs.getCurrent().id, {
+          code: decodeURIComponent(item.script.substr('javascript:'.length)),
+        }, function () {
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError.message);
+          }
+          else {
+            close();
+          }
+        });
+      }
+      else if (item.type === 'bookmark') {
+        open(item.url);
+      }
+      else {
+        util.tabs.activate(item);
+        util.close();
+      }
     };
 
     this.focusTabFirst = (e) => {
