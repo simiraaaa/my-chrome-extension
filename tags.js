@@ -8,10 +8,7 @@ riot.tag2('app', '<div class="f flex-column s-full"> <module-tab-switcher class=
       util.close();
     };
 });
-riot.tag2('item-tab', '<div class="f fm w-full p4 border-bottom cursor-pointer {opts.selected ? \'bg-link text-white\' : \'hover-bg-primary hover-text-white\'}"> <div class="mr4 flex-fixed s24 f fh bg-white rounded-4"> <img riot-src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s20"> </div> <div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.title}</div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs10 parent-hover-text-white lh12 {opts.selected ? \'text-white\' : \'text-weak\'}">{opts.item.url}</div> </div> </div>', 'item-tab,[data-is="item-tab"]{display:block}', '', function(opts) {
-    this.on('mount', () => {
-      this.update();
-    });
+riot.tag2('item-domain', '<div class="f fm w-full p4 border-bottom cursor-pointer {opts.selected ? \'bg-link text-white\' : \'hover-bg-primary hover-text-white\'}"> <div class="mr4 flex-fixed s20 f fh bg-white rounded-4"> <img riot-src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s16"> </div> <div> <div class="line-clamp-2 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.name}</div> </div> </div>', 'item-domain,[data-is="item-domain"]{display:block}', '', function(opts) {
     this.on('updated', () => {
       if (!this._lastSelected && opts.selected) {
         this.root.scrollIntoView({
@@ -23,7 +20,10 @@ riot.tag2('item-tab', '<div class="f fm w-full p4 border-bottom cursor-pointer {
     });
 
 });
-riot.tag2('item-domain', '<div class="f fm w-full p4 border-bottom cursor-pointer {opts.selected ? \'bg-link text-white\' : \'hover-bg-primary hover-text-white\'}"> <div class="mr4 flex-fixed s20 f fh bg-white rounded-4"> <img riot-src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s16"> </div> <div> <div class="line-clamp-2 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.name}</div> </div> </div>', 'item-domain,[data-is="item-domain"]{display:block}', '', function(opts) {
+riot.tag2('item-tab', '<div class="f fm w-full p4 border-bottom cursor-pointer {opts.selected ? \'bg-link text-white\' : \'hover-bg-primary hover-text-white\'}"> <div class="mr4 flex-fixed s24 f fh bg-white rounded-4"> <img riot-src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s20"> </div> <div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.title}</div> <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs10 parent-hover-text-white lh12 {opts.selected ? \'text-white\' : \'text-weak\'}">{opts.item.url}</div> </div> </div>', 'item-tab,[data-is="item-tab"]{display:block}', '', function(opts) {
+    this.on('mount', () => {
+      this.update();
+    });
     this.on('updated', () => {
       if (!this._lastSelected && opts.selected) {
         this.root.scrollIntoView({
@@ -87,7 +87,8 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       var aimaiMatchItems = [];
       items.forEach(item => {
         var urlIndex = item.isBookmarklet ? -1 : item.url.indexOf(wordLowerCase);
-        var titleIndex = item.title.toLowerCase().indexOf(wordLowerCase);
+        var title = item.type === 'bookmark' ? item.path : item.title;
+        var titleIndex = title.toLowerCase().indexOf(wordLowerCase);
 
         if (urlIndex !== -1 || titleIndex !== -1) {
           partMatchItems.push({
@@ -98,7 +99,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
         }
         else {
           var urlTest = item.isBookmarklet ? false : reg.test(item.url);
-          var titleTest = reg.test(item.title);
+          var titleTest = reg.test(title);
 
           if (urlTest || titleTest) {
             aimaiMatchItems.push({
@@ -131,8 +132,15 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       var v = this.refs.search.value;
       var items = null;
 
-      if (/^ /.test(v)) {
+      if (/^\>/.test(v)) {
         items = await util.bookmarks.getAll();
+        items = items.filter(item => item.isBookmarklet);
+        v = v.substr(1);
+      }
+
+      else if (/^ /.test(v)) {
+        items = await util.bookmarks.getAll();
+        items = items.filter(item => !item.isBookmarklet);
         v = v.substr(1);
       }
       else {
@@ -190,6 +198,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
         d.__index = index;
         d.tabs.forEach(i => {
           i.__index = counter++;
+          i._del = false;
         });
       });
       this.tabLength = counter;
@@ -222,7 +231,18 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
         });
       }
       else if (item.type === 'bookmark') {
-        open(item.url);
+        var tabs = await util.tabs.getAllByAllWindow();
+        var url = item.url.replace(/\/$/g, '');
+        var tab = tabs.find(tab => {
+          return tab.url.replace(/\/$/g, '') === url;
+        });
+        if (tab) {
+          util.tabs.activate(tab);
+          util.close();
+        }
+        else {
+          open(item.url);
+        }
       }
       else {
         util.tabs.activate(item);

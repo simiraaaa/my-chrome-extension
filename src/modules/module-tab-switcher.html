@@ -76,7 +76,8 @@
       var aimaiMatchItems = [];
       items.forEach(item => {
         var urlIndex = item.isBookmarklet ? -1 : item.url.indexOf(wordLowerCase);
-        var titleIndex = item.title.toLowerCase().indexOf(wordLowerCase);
+        var title = item.type === 'bookmark' ? item.path : item.title;
+        var titleIndex = title.toLowerCase().indexOf(wordLowerCase);
         // 部分一致
         if (urlIndex !== -1 || titleIndex !== -1) {
           partMatchItems.push({
@@ -87,7 +88,7 @@
         }
         else {
           var urlTest = item.isBookmarklet ? false : reg.test(item.url);
-          var titleTest = reg.test(item.title);
+          var titleTest = reg.test(title);
           // 曖昧一致
           if (urlTest || titleTest) {
             aimaiMatchItems.push({
@@ -119,9 +120,16 @@
     this.search = async () => {
       var v = this.refs.search.value;
       var items = null;
-      // ブックマーク検索 (最初が半角スペースの場合)
-      if (/^ /.test(v)) {
+      // ブックマークレット検索 :
+      if (/^\>/.test(v)) {
         items = await util.bookmarks.getAll();
+        items = items.filter(item => item.isBookmarklet);
+        v = v.substr(1);
+      }
+      // ブックマーク検索 (最初が半角スペースの場合)
+      else if (/^ /.test(v)) {
+        items = await util.bookmarks.getAll();
+        items = items.filter(item => !item.isBookmarklet);
         v = v.substr(1);
       }
       else {
@@ -180,6 +188,7 @@
         d.__index = index;
         d.tabs.forEach(i => {
           i.__index = counter++;
+          i._del = false;
         });
       });
       this.tabLength = counter;
@@ -212,7 +221,18 @@
         });
       }
       else if (item.type === 'bookmark') {
-        open(item.url);
+        var tabs = await util.tabs.getAllByAllWindow();
+        var url = item.url.replace(/\/$/g, '');
+        var tab = tabs.find(tab => {
+          return tab.url.replace(/\/$/g, '') === url;
+        });
+        if (tab) {
+          util.tabs.activate(tab);
+          util.close();
+        }
+        else {
+          open(item.url);  
+        }
       }
       else {
         util.tabs.activate(item);
