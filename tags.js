@@ -165,7 +165,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       var domainMap = {};
       var domains = [];
       var domainReg = /^.*\:\/\/([^\/]*)\//i;
-      items.forEach((item, index) => {
+      var pushFunction = (item, index) => {
         var domainName = null;
         if (item.isBookmarklet) {
           domainName = 'ブックマークレット';
@@ -190,18 +190,39 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
           domains.push(domain);
         }
         domain.tabs.push(item);
-      });
-      this.items = domains;
-      var counter = 0;
+      };
+      var updateIndex = () => {
+        var counter = 0;
 
-      this.items.forEach((d, index) => {
-        d.__index = index;
-        d.tabs.forEach(i => {
-          i.__index = counter++;
-          i._del = false;
+        domains.forEach((d, index) => {
+          d.__index = index;
+          d.tabs.forEach(i => {
+            i.__index = counter++;
+            i._del = false;
+          });
         });
-      });
-      this.tabLength = counter;
+        this.tabLength = counter;
+      };
+
+      items.slice(0, 5).forEach(pushFunction);
+      updateIndex();
+      setTimeout(() => {
+        items.slice(5, 10).forEach(pushFunction);
+        updateIndex();
+        this.update();
+      }, 300);
+      setTimeout(() => {
+        items.slice(10, 20).forEach(pushFunction);
+        updateIndex();
+        this.update();
+      }, 500);
+      setTimeout(() => {
+        items.slice(20).forEach(pushFunction);
+        updateIndex();
+        this.update();
+      }, 1000);
+      this.items = domains;
+
       this.selectIndex = 0;
       this.isSearching = false;
       this.update();
