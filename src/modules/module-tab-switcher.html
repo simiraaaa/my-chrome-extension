@@ -136,9 +136,11 @@
         items = await util.tabs.getAllByAllWindow();
       }
       if (v) {
-        var results = [];
+        var result = [];
+        // 空白文字で分割して、配列の配列を result に flatten で入れる
         v.split(/\s+/).reduce((filteredItems, word) => {
           var results = [];
+          // 一致度が高い順に並ぶようにpushする
           filteredItems.forEach((items) => {
             this.filterItems(items, word).forEach(items => {
               if (items.length > 0) {
@@ -147,8 +149,8 @@
             });
           });
           return results;
-        }, [items]).forEach(items => items.forEach(item => results.push(item)));
-        items = results;
+        }, [items]).forEach(items => items.forEach(item => result.push(item)));
+        items = result;
       }
       
       // ドメインごとに分ける
