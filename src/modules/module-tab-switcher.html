@@ -117,17 +117,18 @@
       ];
     };
 
-    this.search = async () => {
-      var v = this.refs.search.value;
-      var items = null;
+    this.getItems = async (v) => {
+      var searchType = 'normal';
       // ブックマークレット検索 :
       if (/^\>/.test(v)) {
+        searchType = 'bookmarklet';
         items = await util.bookmarks.getAll();
         items = items.filter(item => item.isBookmarklet);
         v = v.substr(1);
       }
-      // ブックマーク検索 (最初が半角スペースの場合)
-      else if (/^ /.test(v)) {
+      // ブックマーク検索 (最初がスペースの場合)
+      else if (/^\s/.test(v)) {
+        searchType = 'bookmark';
         items = await util.bookmarks.getAll();
         items = items.filter(item => !item.isBookmarklet);
         v = v.substr(1);
@@ -151,7 +152,16 @@
           return results;
         }, [items]).forEach(items => items.forEach(item => result.push(item)));
         items = result;
+        // if (searchType === 'normal') {
+        //   items = items.concat(await this.getItems(` ${v}`));
+        // }
       }
+      return items;
+    };
+
+    this.search = async () => {
+      var v = this.refs.search.value;
+      var items = await this.getItems(v);
       
       // ドメインごとに分ける
       var domainMap = {};

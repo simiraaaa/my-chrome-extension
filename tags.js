@@ -101,17 +101,18 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       ];
     };
 
-    this.search = async () => {
-      var v = this.refs.search.value;
-      var items = null;
+    this.getItems = async (v) => {
+      var searchType = 'normal';
 
       if (/^\>/.test(v)) {
+        searchType = 'bookmarklet';
         items = await util.bookmarks.getAll();
         items = items.filter(item => item.isBookmarklet);
         v = v.substr(1);
       }
 
-      else if (/^ /.test(v)) {
+      else if (/^\s/.test(v)) {
+        searchType = 'bookmark';
         items = await util.bookmarks.getAll();
         items = items.filter(item => !item.isBookmarklet);
         v = v.substr(1);
@@ -135,7 +136,14 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
           return results;
         }, [items]).forEach(items => items.forEach(item => result.push(item)));
         items = result;
+
       }
+      return items;
+    };
+
+    this.search = async () => {
+      var v = this.refs.search.value;
+      var items = await this.getItems(v);
 
       var domainMap = {};
       var domains = [];
