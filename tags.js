@@ -98,6 +98,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
         if (urlIndex !== -1 || titleIndex !== -1) {
           partMatchItems.push({
             item,
+            title,
             urlIndex: urlIndex === -1 ? Infinity : urlIndex,
             titleIndex: titleIndex === -1 ? Infinity : titleIndex,
           });
@@ -113,6 +114,7 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
 
           if (urlTest || titleTest) {
             aimaiMatchItems.push({
+              title,
               item,
               urlTest,
               titleTest,
@@ -123,6 +125,9 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
       return [
         partMatchItems.sort((a, b) => {
           if (a.urlIndex === b.urlIndex) {
+            if (a.titleIndex === b.titleIndex) {
+              return a.title.length - b.title.length;
+            }
             return a.titleIndex - b.titleIndex;
           }
           else {
@@ -133,6 +138,9 @@ riot.tag2('module-tab-switcher', '<form onsubmit="{submit}" class="f flex-column
 
           var aCount = +a.titleTest + a.urlTest;
           var bCount = +b.titleTest + b.urlTest;
+          if (aCount === bCount) {
+            return a.title.length - b.title.length;
+          }
           return bCount - aCount;
         }).map(item => item.item)
       ];

@@ -87,6 +87,7 @@
         if (urlIndex !== -1 || titleIndex !== -1) {
           partMatchItems.push({
             item,
+            title,
             urlIndex: urlIndex === -1 ? Infinity : urlIndex,
             titleIndex: titleIndex === -1 ? Infinity : titleIndex,
           });
@@ -102,6 +103,7 @@
           // 曖昧一致
           if (urlTest || titleTest) {
             aimaiMatchItems.push({
+              title,
               item,
               urlTest,
               titleTest,
@@ -112,6 +114,9 @@
       return [
         partMatchItems.sort((a, b) => {
           if (a.urlIndex === b.urlIndex) {
+            if (a.titleIndex === b.titleIndex) {
+              return a.title.length - b.title.length;
+            }
             return a.titleIndex - b.titleIndex;
           }
           else {
@@ -122,6 +127,9 @@
           // 両方マッチしてるやつが上
           var aCount = +a.titleTest + a.urlTest;
           var bCount = +b.titleTest + b.urlTest;
+          if (aCount === bCount) {
+            return a.title.length - b.title.length;
+          }
           return bCount - aCount;
         }).map(item => item.item)
       ];
