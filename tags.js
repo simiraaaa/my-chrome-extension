@@ -1,4 +1,4 @@
-riot.tag2('app', '<div class="f flex-column s-full"> <module-tab-switcher class="f flex-column s-full"></module-tab-switcher> <button class="button primary" ref="sort" type="button" onclick="{sortTabs}">タブソート</button> </div>', 'app,[data-is="app"]{display:block;position:absolute;overflow:hidden;width:100%;height:100%}', '', function(opts) {
+riot.tag2('app', '<div class="f flex-column s-full"> <module-tab-switcher class="f flex-column h0 flex-auto w-full"></module-tab-switcher> <button class="button primary flex-fixed" ref="sort" type="button" onclick="{sortTabs}">タブソート</button> </div>', 'app,[data-is="app"]{display:block;position:absolute;overflow:hidden;width:100%;height:100%}', '', function(opts) {
 
     this.on('mount', () => {
     });
