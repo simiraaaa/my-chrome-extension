@@ -4,7 +4,7 @@
       <img src="{opts.item.favIconUrl}" alt="" class="object-fit-cover s20">
     </div>
     <div>
-      <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.title}</div>
+      <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs12 lh12">{opts.item.isSearchText ? opts.item.searchText : opts.item.title}</div>
       <div class="line-clamp-1 word-break-all white-space-pre-wrap w-full fs10 parent-hover-text-white lh12 { opts.selected ? 'text-white' : 'text-weak' }">{opts.item.url}</div>
     </div>
   </div>

@@ -78,6 +78,11 @@
         var urlIndex = item.isBookmarklet ? -1 : item.url.indexOf(wordLowerCase);
         var title = item.type === 'bookmark' ? item.path : item.title;
         var titleIndex = title.toLowerCase().indexOf(wordLowerCase);
+        item.isSearchText = false;
+        if (titleIndex === -1 && item.searchText) {
+          titleIndex = item.searchText.toLowerCase().indexOf(wordLowerCase);
+          item.isSearchText = true;
+        }
         // 部分一致
         if (urlIndex !== -1 || titleIndex !== -1) {
           partMatchItems.push({
@@ -89,6 +94,11 @@
         else {
           var urlTest = item.isBookmarklet ? false : reg.test(item.url);
           var titleTest = reg.test(title);
+          item.isSearchText = false;
+          if (item.searchText) {
+            item.isSearchText = true;
+            titleTest = titleTest || reg.test(item.searchText);
+          }
           // 曖昧一致
           if (urlTest || titleTest) {
             aimaiMatchItems.push({
@@ -119,6 +129,7 @@
 
     this.getItems = async (v) => {
       var searchType = 'normal';
+      var items;
       // ブックマークレット検索 :
       if (/^\>/.test(v)) {
         searchType = 'bookmarklet';
@@ -134,7 +145,14 @@
         v = v.substr(1);
       }
       else {
-        items = await util.tabs.getAllByAllWindow();
+        var [items, bookmarks] = await Promise.all([util.tabs.getAllByAllWindow(), util.bookmarks.getAll()]);
+        bookmarks = bookmarks.filter(item => !item.isBookmarklet);
+        bookmarks.forEach(bookmark => {
+          var item = items.find(item => item.url === bookmark.url);
+          if (item) {
+            item.searchText = bookmark.path;
+          }
+        });
       }
       if (v) {
         var result = [];

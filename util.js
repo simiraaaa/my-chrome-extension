@@ -109,8 +109,9 @@ var util = {
     getAll() {
       return new Promise(r => chrome.bookmarks.getTree(tree => {
         var items = [];
-        var f = (item) => {
+        var f = (item, isRoot) => {
           if (item.children) {
+            var nextIsRoot = item.title === '';
             /*
             children: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
             dateAdded: 1554019638389
@@ -122,10 +123,15 @@ var util = {
             */
             item.children.forEach(child => {
               child.parent = item;
-              child.path = item.path || '';
-              child.path += '/' + child.title.replace(/\//g, '');
+              if (!isRoot) {
+                child.path = item.path || '';
+                child.path += '/' + child.title.replace(/\//g, '');
+              }
+              else {
+                child.path = child.title.replace(/\//g, '');
+              }
               child.path = child.path.replace(/^\//g, '');
-              f(child);
+              f(child, nextIsRoot);
             });
           }
           else {
@@ -152,7 +158,7 @@ var util = {
         };
         // 並列の階層構造にする / は空白に置換
         // フォルダ名/タイトル
-        tree.forEach(f);
+        tree.forEach(t => f(t, true));
         r(items);
       }));
     }
