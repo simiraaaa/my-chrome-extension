@@ -18,7 +18,13 @@ var util = {
           res += s;
         }
         if (i < str.length - 1) {
-          res += '.*';
+          // res += '(?=';
+          let next = str[i + 1];
+          if (escapeTarget.test(next)) {
+            next = `\\${next}`;
+          }
+          res += `[^${next}]*`;
+          // res += ')\\' + (i + 1)
         }
       }
       return new RegExp(res, option);
