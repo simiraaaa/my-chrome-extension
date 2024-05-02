@@ -79,7 +79,7 @@
         var title = item.type === 'bookmark' ? item.path : item.title;
         var titleIndex = title.toLowerCase().indexOf(wordLowerCase);
         item.isSearchText = false;
-        if (titleIndex === -1 && item.searchText) {
+        if (item.searchText) {
           titleIndex = item.searchText.toLowerCase().indexOf(wordLowerCase);
           item.isSearchText = true;
         }
