@@ -1,3 +1,5 @@
+importScripts('util.js');
+
 // ウィンドウフォーカスしたときも タブ履歴 push する
 chrome.windows.onFocusChanged.addListener(async windowId => {
   const {
@@ -38,7 +40,7 @@ chrome.tabs.onActivated.addListener(async info => {
 chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
   // ウィンドウが閉じられた場合のタブが閉じられたときは何もしない
   if (removeInfo.isWindowClosing) {
-    return ;
+    return;
   }
   // TODO: タブ履歴から消す
 });

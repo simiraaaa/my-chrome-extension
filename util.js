@@ -63,7 +63,7 @@ var util = {
     },
 
     getAll(windowId) {
-      return new Promise(r => chrome.tabs.getAllInWindow(windowId, e => r(e)));
+      return chrome.tabs.query({ windowId });
     },
 
     getCurrent() {
@@ -107,7 +107,7 @@ var util = {
 
     activate(tab) {
       util.windows.activate(tab.windowId);
-      return new Promise(r => chrome.tabs.update(tab.id, {active: true}, e => r(e)));
+      return new Promise(r => chrome.tabs.update(tab.id, { active: true }, e => r(e)));
     },
   },
 
@@ -245,5 +245,5 @@ var util = {
       return this._historyIndex <= 0;
     },
   },
-  
+
 };
