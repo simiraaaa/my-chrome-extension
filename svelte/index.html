@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main</title>
+  <script src="./dist/components.umd.cjs"></script>
+  <link rel="stylesheet" href="./dist/components.css">
+</head>
+<body>
+  <div id="main"></div>
+  <script>
+    {
+      const { mount, Main } = components;
+      mount(Main, {
+        target: document.getElementById('main'),
+      });
+    }
+  </script>
+</body>
+</html>
