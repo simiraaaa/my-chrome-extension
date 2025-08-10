@@ -1,28 +1,52 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "my chrome extension",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "自分用の拡張機能",
-  "browser_action": {
+  "action": {
     "default_popup": "popup.html",
     "default_icon": "icon.png"
   },
   "background": {
-    "scripts": [
-      "util.js",
-      "event.js"
-    ],
-    "persistent": false
+    "type": "module",
+    "service_worker": "event.js"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "main.js"
+      ]
+    }
+  ],
   "permissions": [
     "tabs",
     "storage",
     "bookmarks",
-    "chrome://favicon/*/*",
-    "http://*/*",
-    "https://*/*"
+    "scripting",
+    "userScripts",
+    "favicon",
+    "activeTab"
   ],
-  "icons" : {
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "_favicon/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "extension_ids": [
+        "*"
+      ]
+    }
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "icons": {
     "256": "icon.png"
   },
   "commands": {
@@ -32,6 +56,5 @@
     "forwardTab": {
       "description": "前のタブを表示したやつを元のタブに戻す"
     }
-  },
-  "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-eval'; style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline'; object-src 'self'"
+  }
 }
