@@ -90,6 +90,6 @@ chrome.commands.onCommand.addListener(async function(command) {
       }
     },
   };
-  var f = commandFunc[command];
-  f && f();
+
+  return commandFunc[command]?.();
 });
