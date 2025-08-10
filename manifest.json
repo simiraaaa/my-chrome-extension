@@ -8,19 +8,43 @@
     "default_icon": "icon.png"
   },
   "background": {
+    "type": "module",
     "service_worker": "event.js"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "main.js"
+      ]
+    }
+  ],
   "permissions": [
     "tabs",
     "storage",
     "bookmarks",
     "scripting",
+    "userScripts",
+    "favicon",
     "activeTab"
   ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "_favicon/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "extension_ids": [
+        "*"
+      ]
+    }
+  ],
   "host_permissions": [
-    "chrome://favicon/*/*",
-    "http://*/*",
-    "https://*/*"
+    "*://*/*"
   ],
   "icons": {
     "256": "icon.png"
@@ -32,9 +56,5 @@
     "forwardTab": {
       "description": "前のタブを表示したやつを元のタブに戻す"
     }
-  },
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self';",
-    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';"
   }
 }

@@ -1,25 +1,12 @@
-<app>
-  <div class="f flex-column s-full">
-    <module-tab-switcher class="f flex-column h0 flex-auto w-full"></module-tab-switcher>
-    <button class="button primary flex-fixed" ref="sort" type="button" onclick={sortTabs}>タブソート</button>
-  </div>
-  <style type=less>
-    :scope {
-      display: block;
-      position: absolute;
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-    }
-  </style>
-  <script>
-
-    this.on('mount', () => {
-    });
-
-    this.sortTabs = async () => {
-      await util.tabs.sort();
-      util.close();
-    };
-  </script>
-</app>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div>%sveltekit.body%</div>
+  </body>
+</html>

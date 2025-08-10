@@ -8,9 +8,9 @@ export default defineConfig(({ command }) => ({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/lib/index.ts'),
-      formats: ['umd'],
-      name: 'components',
-      fileName: 'components',
+      formats: ['es'],
+      name: 'mce',
+      fileName: 'mce',
     },
     outDir: 'dist',
   },

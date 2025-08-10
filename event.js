@@ -1,11 +1,7 @@
-importScripts('util.js');
+import { tabHistory, tabUtil } from './dist/mce.js';
 
 // ウィンドウフォーカスしたときも タブ履歴 push する
 chrome.windows.onFocusChanged.addListener(async windowId => {
-  const {
-    tabHistory,
-    tabs,
-  } = util;
   // unfocus
   if (windowId === -1) {
     return;
@@ -15,18 +11,16 @@ chrome.windows.onFocusChanged.addListener(async windowId => {
     return;
   }
   await tabHistory.load();
-  var currentTab = await tabs.getCurrent();
+  var currentTab = await tabUtil.getCurrent();
   if (tabHistory.current === currentTab.id) {
     return;
   }
   tabHistory.push({ tabId: currentTab.id });
   tabHistory.save();
 });
+
 // タブ履歴 push
 chrome.tabs.onActivated.addListener(async info => {
-  const {
-    tabHistory,
-  } = util;
   if (await tabHistory.isLocked()) {
     tabHistory.unlock();
     return;
@@ -36,6 +30,7 @@ chrome.tabs.onActivated.addListener(async info => {
   tabHistory.push(info);
   tabHistory.save();
 });
+
 // 履歴から削除する
 chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
   // ウィンドウが閉じられた場合のタブが閉じられたときは何もしない
@@ -44,21 +39,18 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
   }
   // TODO: タブ履歴から消す
 });
+
 // ショートカット
 chrome.commands.onCommand.addListener(async function(command) {
-  const {
-    tabs,
-    tabHistory,
-  } = util;
   var commandFunc = {
     async backTab() {
       await tabHistory.load();
       var tabId, tab;
-      var currentTab = await tabs.getCurrent();
+      var currentTab = await tabUtil.getCurrent();
       while (typeof (tabId = tabHistory.back()) === 'number') {
         try {
           if (currentTab.id !== tabId) {
-            tab = await tabs.get(tabId);
+            tab = await tabUtil.get(tabId);
           }
           break;
         }
@@ -71,17 +63,17 @@ chrome.commands.onCommand.addListener(async function(command) {
       await tabHistory.save();
       if (tab) {
         await tabHistory.lock();
-        tabs.activate(tab);
+        tabUtil.activate(tab);
       }
     },
     async forwardTab() {
       await tabHistory.load();
       var tabId, tab;
-      var currentTab = await tabs.getCurrent();
+      var currentTab = await tabUtil.getCurrent();
       while (typeof (tabId = tabHistory.forward()) === 'number') {
         try {
           if (currentTab.id !== tabId) {
-            tab = await tabs.get(tabId);
+            tab = await tabUtil.get(tabId);
           }
           break;
         }
@@ -94,7 +86,7 @@ chrome.commands.onCommand.addListener(async function(command) {
       await tabHistory.save();
       if (tab) {
         await tabHistory.lock();
-        tabs.activate(tab);
+        tabUtil.activate(tab);
       }
     },
   };
