@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "my chrome extension",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "自分用の拡張機能",
   "action": {
     "default_popup": "popup.html",
@@ -11,16 +11,6 @@
     "type": "module",
     "service_worker": "event.js"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "main.js"
-      ]
-    }
-  ],
   "permissions": [
     "tabs",
     "storage",
