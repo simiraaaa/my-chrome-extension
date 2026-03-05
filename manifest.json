@@ -18,7 +18,8 @@
     "scripting",
     "userScripts",
     "favicon",
-    "activeTab"
+    "activeTab",
+    "readingList"
   ],
   "web_accessible_resources": [
     {
@@ -45,6 +46,9 @@
     },
     "forwardTab": {
       "description": "前のタブを表示したやつを元のタブに戻す"
+    },
+    "addReadingList": {
+      "description": "現在のページをリーディングリストに追加する"
     }
   }
 }

@@ -89,6 +89,28 @@ chrome.commands.onCommand.addListener(async function(command) {
         tabUtil.activate(tab);
       }
     },
+    async addReadingList() {
+      const currentTab = await tabUtil.getCurrent();
+      if (!currentTab.url || !currentTab.title) return;
+
+      // chrome:// や edge:// などの内部ページは追加不可
+      if (!/^https?:\/\//.test(currentTab.url)) return;
+
+      try {
+        await chrome.readingList.addEntry({
+          title: currentTab.title,
+          url: currentTab.url,
+          hasBeenRead: false,
+        });
+      } catch (e) {
+        // 既に追加済みの場合など
+        console.error('addReadingList error:', e.message);
+      }
+
+      chrome.action.setBadgeBackgroundColor({ color: [0, 0, 0, 0] });
+      chrome.action.setBadgeText({ text: '✅' });
+      setTimeout(() => chrome.action.setBadgeText({ text: '' }), 3000);
+    },
   };
 
   return commandFunc[command]?.();
