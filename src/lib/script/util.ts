@@ -10,7 +10,8 @@ export type SwitcherItem = {
   script?: string;
   path?: string;
   // parent?: SwitcherItem;
-  type?: 'bookmark' | 'folder';
+  type?: 'bookmark' | 'folder' | 'readingList';
+  hasBeenRead?: boolean;
   children?: SwitcherItem[];
   bookmarkTreeNode?: chrome.bookmarks.BookmarkTreeNode;
   tab?: chrome.tabs.Tab;
@@ -287,6 +288,40 @@ export function debounce(
     cancel: () => clearTimeout(id),
   });
 }
+
+export const readingListUtil = {
+  async getAll(): Promise<SwitcherItem[]> {
+    const entries = await chrome.readingList.query({});
+
+    const toItem = (entry: chrome.readingList.ReadingListEntry): SwitcherItem => ({
+      id: entry.url,
+      title: entry.title,
+      url: entry.url,
+      favIconUrl: faviconURL(entry.url),
+      type: 'readingList',
+      hasBeenRead: entry.hasBeenRead,
+    });
+
+    // 未読: 全件（新しい順）、既読: 最大30件（新しい順）
+    const unread = entries
+      .filter((e) => !e.hasBeenRead)
+      .sort((a, b) => b.creationTime - a.creationTime);
+    const read = entries
+      .filter((e) => e.hasBeenRead)
+      .sort((a, b) => b.creationTime - a.creationTime)
+      .slice(0, 30);
+
+    return [...unread, ...read].map(toItem);
+  },
+
+  remove(url: string) {
+    return chrome.readingList.removeEntry({ url });
+  },
+
+  toggleRead(url: string, hasBeenRead: boolean) {
+    return chrome.readingList.updateEntry({ url, hasBeenRead });
+  },
+};
 
 export function faviconURL(u: string): string {
   const url = new URL(chrome.runtime.getURL("/_favicon/"));

@@ -14,7 +14,7 @@
   import Tab from '../items/Tab.svelte';
 
   import { debounce, type SwitcherItem } from '../script/util.js';
-  import { util, bookmarkUtil, tabUtil } from '../script/util.js';
+  import { util, bookmarkUtil, tabUtil, readingListUtil } from '../script/util.js';
 
   let currentFocusTab: SwitcherItem | null = null;
   let currentFocusDomain = $state.raw<SwitcherDomain | null>(null);
@@ -30,6 +30,15 @@
   let tabLength = 0;
   let lastHoveredItem: SwitcherItem | null = null;
   const deletedTabIDs = new SvelteSet<number>();
+  const deletedReadingListURLs = new SvelteSet<string>();
+  let searchType = $state<'normal' | 'bookmarklet' | 'bookmark' | 'readingList'>('normal');
+
+  const listLabel = $derived({ 
+    normal: 'タブ', 
+    bookmark: 'ブックマーク',
+    bookmarklet: 'ブックマークレット',
+    readingList: 'リーディングリスト',
+  }[searchType]);
 
   $effect.pre(() => {
     var item = null;
@@ -156,10 +165,15 @@
   }
 
   async function getItems(v: string): Promise<SwitcherItem[]> {
-    var searchType = 'normal';
     var sItems: SwitcherItem[] = [];
+    // リーディングリスト検索 <
+    if (/^</.test(v)) {
+      searchType = 'readingList';
+      sItems = await readingListUtil.getAll();
+      v = v.slice(1);
+    }
     // ブックマークレット検索 :
-    if (/^\>/.test(v)) {
+    else if (/^\>/.test(v)) {
       searchType = 'bookmarklet';
       sItems = await bookmarkUtil.getAll();
       sItems = sItems.filter((item) => item.isBookmarklet);
@@ -172,6 +186,7 @@
       sItems = sItems.filter((item) => !item.isBookmarklet);
       v = v.slice(1);
     } else {
+      searchType = 'normal';
       let [tabs, bookmarks] = await Promise.all([
         tabUtil.getAllByAllWindow(),
         bookmarkUtil.getAll()
@@ -231,7 +246,9 @@
     var domainReg = /^.*\:\/\/([^\/]*)\//i;
     var pushFunction = (item: SwitcherItem) => {
       var domainName = null;
-      if (item.isBookmarklet) {
+      if (searchType === 'readingList' && item.hasBeenRead) {
+        domainName = '既読';
+      } else if (item.isBookmarklet) {
         domainName = 'ブックマークレット';
       } else {
         var domainMatch = item.url.match(domainReg);
@@ -324,7 +341,7 @@
         });
 
       close();
-    } else if (item.type === 'bookmark') {
+    } else if (item.type === 'bookmark' || item.type === 'readingList') {
       var tabs = await tabUtil.getAllByAllWindow();
       var url = item.url.replace(/\/$/g, '');
       var tab = tabs.find((tab) => {
@@ -346,13 +363,46 @@
     selectIndex = domain.tabs[0]?.__index || 0;
   }
 
-  function isDeletedTab(tab: SwitcherItem | null) {
-    return typeof tab?.tab?.id === 'number' ? deletedTabIDs.has(tab.tab.id) : false;
+  /** リーディングリストの既読状態をその場で更新（位置変更なし） */
+  function toggleReadInPlace(url: string, newHasBeenRead: boolean) {
+    readingListUtil.toggleRead(url, newHasBeenRead);
+    items = items.map((d) => ({
+      ...d,
+      tabs: d.tabs.map((t) => (t.url === url ? { ...t, hasBeenRead: newHasBeenRead } : t))
+    }));
+  }
+
+  /** フォーカス中のアイテムを返す。上下キー未操作でも selectIndex で探す */
+  function getTargetItem(): SwitcherItem | null {
+    if (isHoverPriority && lastHoveredItem) {
+      // items 再構築後も stale 参照を使わず URL で引き直す
+      for (const d of items) {
+        for (const t of d.tabs) {
+          if (t.url === lastHoveredItem.url) return t;
+        }
+      }
+      return lastHoveredItem;
+    }
+    if (currentFocusTab) return currentFocusTab;
+    for (const d of items) {
+      for (const t of d.tabs) {
+        if (t.__index === selectIndex) return t;
+      }
+    }
+    return null;
+  }
+
+  function isDeletedItem(item: SwitcherItem | null): boolean {
+    if (!item) return false;
+    if (searchType === 'readingList') {
+      return deletedReadingListURLs.has(item.url);
+    }
+    return typeof item.tab?.id === 'number' ? deletedTabIDs.has(item.tab.id) : false;
   }
 
   function closeTab(tab: SwitcherItem | null) {
     if (typeof tab?.tab?.id !== 'number') return;
-    if (isDeletedTab(tab)) return;
+    if (isDeletedItem(tab)) return;
     deletedTabIDs.add(tab.tab.id);
     chrome.tabs.remove(tab.tab.id);
   }
@@ -366,9 +416,22 @@
       var f = {
         d() {
           e.preventDefault();
-          var tab = isHoverPriority ? lastHoveredItem : currentFocusTab;
+          var tab = getTargetItem();
           if (!tab) return;
-          closeTab(tab);
+          if (searchType === 'readingList') {
+            if (deletedReadingListURLs.has(tab.url)) return;
+            deletedReadingListURLs.add(tab.url);
+            readingListUtil.remove(tab.url);
+          } else {
+            closeTab(tab);
+          }
+        },
+        x() {
+          e.preventDefault();
+          if (searchType !== 'readingList') return;
+          var tab = getTargetItem();
+          if (!tab) return;
+          toggleReadInPlace(tab.url, !tab.hasBeenRead);
         }
       }[e.key];
       f?.();
@@ -443,7 +506,7 @@
       </div>
     </div>
     <div class="s-full f flex-column">
-      <div class="bg-lightgray w-full p6 fs12 text-center flex-fixed">↓↑</div>
+      <div class="bg-lightgray w-full p6 fs12 text-center flex-fixed">↓↑ {listLabel}</div>
       <div class="overflow-scroll s-full" bind:this={scrollElement}>
         {#each items as domain (domain.name)}
           <div>
@@ -452,13 +515,16 @@
             </div>
             {#each domain.tabs as item (item.id)}
               <Tab
-                class={isDeletedTab(item) ? 'opacity-50 pointer-none' : ''}
+                class={isDeletedItem(item) ? 'opacity-50 pointer-none' : ''}
                 favIconUrl={item.favIconUrl}
                 title={item.isSearchText ? item.searchText : item.title}
                 url={item.url}
                 onclick={() => switchTab(item)}
                 selected={item.__index === selectIndex}
                 onmouseenter={() => mouseenter(item)}
+                hasBeenRead={item.hasBeenRead}
+                isReadingList={searchType === 'readingList'}
+                onToggleRead={searchType === 'readingList' ? () => toggleReadInPlace(item.url, !item.hasBeenRead) : undefined}
               />
             {/each}
           </div>
